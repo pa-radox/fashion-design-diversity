@@ -16,13 +16,13 @@ from src.mgd_pipelines.mgd_pipe import MGDPipe
 
 NUM_VARIATIONS = 3
 
-NUM_INFERENCE_STEPS = 20
+NUM_INFERENCE_STEPS = 15
 
 GUIDANCE_SCALE = 7.5
 
 # Same base seed every time you run the experiment.
 # Each variation gets BASE_SEED + variation number.
-BASE_SEED = 1003
+BASE_SEED = 1008
 
 # ------------------------------------------------------------
 # SKETCH CONDITIONING
