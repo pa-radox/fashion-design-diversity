@@ -16,13 +16,13 @@ from src.mgd_pipelines.mgd_pipe import MGDPipe
 
 NUM_VARIATIONS = 3
 
-NUM_INFERENCE_STEPS = 15
+NUM_INFERENCE_STEPS = 20
 
 GUIDANCE_SCALE = 7.5
 
 # Same base seed every time you run the experiment.
 # Each variation gets BASE_SEED + variation number.
-BASE_SEED = 1008
+BASE_SEED = 1000
 
 # ------------------------------------------------------------
 # SKETCH CONDITIONING
@@ -52,7 +52,6 @@ DATA_ROOT = (
     r"\assets\data\vitonhd"
 )
 
-#OUTPUT_DIR = "mgd_variations_" + str(SKETCH_COND_RATE) + "_" + str(START_COND_RATE)
 OUTPUT_DIR = "specific_seed_" + str(SKETCH_COND_RATE) + "_" + str(START_COND_RATE)
 
 PERSON_INDEX = 0
@@ -370,7 +369,7 @@ for i in range(NUM_VARIATIONS):
     # --------------------------------------------------------
 
     raw_filename = (
-        f"variation_{variation_number:02d}_raw.png"
+        f"var_{variation_number:02d}_raw.png"
     )
 
     generated.save(
@@ -394,7 +393,7 @@ for i in range(NUM_VARIATIONS):
     # SAVE FINAL IMAGE
     # --------------------------------------------------------
 
-    filename = (f"variation_{variation_number:02d}.png")
+    filename = (f"var_{variation_number:02d}.png")
 
     final_image.save(
         os.path.join(
