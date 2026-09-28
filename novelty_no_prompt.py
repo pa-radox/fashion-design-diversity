@@ -35,7 +35,7 @@ BASE_SEED = 1000
 # Start with 1.0 for the actual experiment.
 #
 
-SKETCH_COND_RATE = 0.75
+SKETCH_COND_RATE = 0.5
 START_COND_RATE = 0.25
 
 # ============================================================
