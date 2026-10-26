@@ -2,104 +2,135 @@
 
 ## Overview
 
-Generative artificial intelligence has the potential to assist fashion designers by producing multiple design concepts from a single initial idea. However, the extent to which AI can generate diverse garment designs while working from the same sketch remains an important question.
+Generative artificial intelligence can assist fashion designers by producing multiple design concepts from a single initial idea. However, how much diversity can generative models achieve when given the same garment sketch?
 
-This project investigates the diversity of AI-generated fashion designs by using the same garment sketches as inputs and generating multiple outputs under different conditioning configurations. Using Multimodal Garment Designer (MGD), the study examines how much variation can be achieved from a single design concept and how generation settings influence the resulting outputs.
+This project investigates the diversity of AI-generated fashion designs by generating multiple outputs from identical sketch inputs and examining how generation settings affect the resulting designs.
+
+The study uses Multimodal Garment Designer (MGD) as its primary model and investigates its behavior under different conditioning configurations. The broader goal is to evaluate the range of designs AI can produce from a shared starting point and investigate how this diversity can be measured and compared across generative models.
 
 ## Research Question
 
-How diverse can AI-generated garment designs be when generated from the same input sketch, and how do different conditioning configurations influence this diversity?
+**How diverse can AI-generated garment designs be when generated from the same input sketch?**
 
-## Objectives
+## Research Contributions
 
-- Investigate the range of garment designs that can be generated from a single sketch.
-- Measure the diversity of generated designs across multiple generations.
-- Examine how changes in conditioning configurations affect the variation between outputs.
-- Analyze the relationship between design diversity and the preservation of the original garment concept.
+This project builds upon an existing generative model rather than introducing an entirely new architecture. The original model and the research contributions are distinguished below.
+
+### Original Implementation
+
+The following components originate from the existing [Multimodal Garment Designer (MGD) repository](https://github.com/aimagelab/multimodal-garment-designer):
+
+- **Model architecture:** The underlying garment-generation architecture and its integration with Stable Diffusion inpainting.
+- **Pretrained weights:** The existing pretrained model parameters.
+- **Generation pipeline:** The original framework for generating garment designs using multimodal conditioning.
+- **Existing model utilities:** Supporting code and preprocessing components inherited from the original implementation.
+
+These components provide the foundation for the experiments conducted in this project.
+
+### My Contributions
+
+The original implementation is used as the basis for an independent investigation of AI-generated design diversity.
+
+My contributions include:
+
+- **Research design:** Formulating a research question focused on the diversity of AI-generated garment designs.
+- **Experimental configuration:** Modifying and systematically testing conditioning parameters to investigate their effects on generated outputs.
+- **Repeated generation:** Generating multiple designs from the same input sketches using different random seeds to examine the variation between outputs.
+- **Diversity evaluation:** Developing an evaluation approach to quantify and analyze differences between generated designs.
+- **Visual analysis:** Comparing generated designs to identify variation in garment silhouettes, shapes, colors, patterns, and details.
+- **Model comparison:** Developing a framework for comparing MGD with other generative models under controlled input conditions, where technically feasible.
+
+The evaluation, comparison, and analysis components are part of the research workflow and will be documented according to their implementation status. The project does not claim ownership of the original MGD architecture or pretrained model.
 
 ## Methodology
 
-### Model
+### Primary Model
 
-This study uses Multimodal Garment Designer (MGD), an image-to-image garment-generation model built on a Stable Diffusion inpainting architecture. MGD incorporates garment sketches, human pose information, and textual information to guide the generation of garment designs.
+The primary model is Multimodal Garment Designer (MGD), an image-to-image garment-generation system that uses garment sketches and additional conditioning information to guide generation.
 
-Rather than developing a new generative architecture, this project evaluates the diversity of designs produced by the model under different generation conditions.
+The study focuses on evaluating the diversity of its outputs rather than developing a new generative architecture.
 
 ### Experimental Procedure
 
-1. Select a set of garment sketches to serve as input designs.
-2. Generate multiple garment designs from each sketch using different random seeds.
-3. Repeat the generation process under different conditioning configurations.
-4. Compare the resulting designs to quantify variation within outputs generated from the same input.
-5. Analyze the results to determine how conditioning settings influence design diversity.
+1. Select garment sketches to serve as input designs.
+2. Generate multiple outputs from each sketch using different random seeds.
+3. Repeat generation under different conditioning configurations.
+4. Compare outputs generated from the same sketch.
+5. Calculate diversity metrics and conduct visual analysis.
+6. Where feasible, compare results with other generative models using matched inputs and documented settings.
 
-The same input sketches will be used across experimental configurations wherever possible, allowing differences in the generated outputs to be examined under controlled conditions.
+Using identical input sketches across configurations allows the study to investigate how generation settings influence the variation observed between outputs.
 
 ### Experimental Variables
 
-The experiment focuses on two conditioning parameters:
+The experiment investigates two conditioning parameters:
 
-- **Sketch-conditioning rate (`sketch_cond_rate`):** Controls the influence of the input sketch during generation.
-- **Starting-image-conditioning rate (`start_cond_rate`):** Controls the influence of the starting-image condition during generation.
+- **Sketch-conditioning rate (`sketch_cond_rate`):** A parameter used to control the influence of sketch conditioning.
+- **Starting-image-conditioning rate (`start_cond_rate`):** A parameter used to control the influence of the starting-image condition.
 
-These parameters will be varied systematically to investigate their relationship with the diversity of generated designs. Other generation settings will be held constant wherever possible.
+These settings are varied to investigate their relationship with generated design diversity. Final parameter values will be documented alongside the experimental results.
+
+Other generation settings, including the input sketch and relevant sampling parameters, will be controlled wherever possible.
 
 ## Dataset
 
-The project uses garment-design and virtual try-on data to obtain suitable inputs and visual references.
+The project uses garment-design data to provide input sketches and relevant visual information.
 
 Potential data sources include:
 
-- **DressCode:** A dataset of garment images and associated visual information.
+- **DressCode:** A virtual try-on dataset containing garment images and associated annotations.
 - **VITON-HD:** A high-resolution virtual try-on dataset containing clothing images and associated annotations.
 
-The final dataset description will specify the selected data source, sample selection criteria, preprocessing steps, and number of sketches used in the experiments.
+The final documentation will identify the datasets and splits actually used, the number of input sketches evaluated, and the preprocessing procedures applied.
 
 ## Evaluation
 
-### Design Diversity
+### Primary Evaluation: Design Diversity
 
-The primary focus of the evaluation is the diversity of generated garment designs from the same input sketch.
+The primary objective is to determine how much variation can be produced from a single garment sketch.
 
 Potential evaluation approaches include:
 
-- **Visual feature diversity:** Measuring differences between generated designs in an image-feature representation space.
-- **Structural diversity:** Examining variation in garment silhouettes, shapes, and design components.
-- **Visual analysis:** Comparing output grids to identify differences in colors, patterns, details, and overall design.
+- **Visual feature diversity:** Measuring differences between generated images in a feature representation space.
+- **Structural diversity:** Examining variation in garment silhouettes, shapes, and major design components.
+- **Visual analysis:** Comparing generated designs to identify differences in patterns, colors, details, and overall appearance.
 
-### Preservation of the Original Design
+The final implementation will specify which metrics are used, how they are calculated, and what aspects of diversity they measure.
 
-Design diversity will also be examined in relation to the original sketch. This secondary consideration helps distinguish meaningful design variations from outputs that depart so substantially from the input that they no longer represent the same garment concept.
+### Secondary Evaluation: Design Preservation
 
-The final evaluation will specify the exact metrics used and explain how each metric reflects the study's definition of design diversity.
+Diversity alone does not establish whether generated outputs remain relevant to the original design.
+
+A secondary evaluation will examine how well generated garments preserve important structural characteristics of the input sketch. This helps contextualize the diversity measurements and distinguish meaningful design variation from outputs that depart substantially from the intended garment concept.
 
 ## Results
 
-*Results will be added after the experiments and analysis are complete.*
+*Experimental results will be added after data collection and analysis are complete.*
 
 ### Quantitative Results
 
-| Conditioning Configuration | Design Diversity | Design Preservation |
-|---|---:|---:|
+The final report will include the selected diversity metrics, summary statistics, sample counts, and comparisons across experimental configurations.
+
+| Experimental Configuration | Diversity Metric(s) | Design Preservation |
+|---|---|---|
 | Configuration 1 | TBD | TBD |
 | Configuration 2 | TBD | TBD |
 | Configuration 3 | TBD | TBD |
 
-The completed analysis will report the selected metrics across multiple sketches and generations.
-
 ### Qualitative Results
 
-Visual comparisons will show multiple designs generated from the same sketch. These examples will illustrate the range of variation achievable under different conditioning configurations.
+Visual comparisons will show multiple designs generated from the same input sketch. These examples will illustrate the range of variation produced under different generation conditions.
 
 ### Discussion
 
-The analysis will address:
+The analysis will investigate:
 
-- The range of design diversity achievable from a single garment sketch.
-- The influence of conditioning configurations on generated variation.
-- The types of design changes produced by the model.
-- The relationship between diversity and consistency with the original concept.
-- Limitations of the model, dataset, and evaluation methods.
+- The range of design diversity achievable from a single sketch.
+- How conditioning configurations influence generated variation.
+- Which aspects of garment design vary most across outputs.
+- How design diversity relates to preservation of the original concept.
+- How the observed results compare across generative models, where applicable.
+- Limitations of the datasets, models, and evaluation methods.
 
 ## Technologies
 
@@ -112,16 +143,27 @@ The analysis will address:
 
 ## Project Status
 
-**In progress.** Model configuration, dataset preparation, image generation, and evaluation are being developed and tested. Results and conclusions will be added as experiments are completed.
+**In progress.**
+
+The project builds upon the existing MGD implementation while developing an experimental framework for investigating AI-generated garment-design diversity. Generation experiments, evaluation, and model comparisons will be documented as they are implemented and completed.
 
 ## Reproducibility
 
-The final project documentation will include the software environment, model checkpoints, dataset details, conditioning configurations, random seeds, sample counts, and evaluation procedures needed to reproduce the experiments.
+The final repository will document:
 
-Large datasets and pretrained model weights are not included in this repository unless explicitly stated.
+- Software environment and dependency versions.
+- Original model and checkpoint sources.
+- Dataset sources, splits, and preprocessing.
+- Experimental conditioning configurations.
+- Random seeds and generation settings.
+- Evaluation metrics and analysis procedures.
+
+Large datasets and pretrained weights are not included unless explicitly stated.
 
 ## Acknowledgments
 
-This project builds upon the Multimodal Garment Designer implementation by the original authors.
+This project builds upon the Multimodal Garment Designer implementation.
 
-Original repository: [aimagelab/multimodal-garment-designer](https://github.com/aimagelab/multimodal-garment-designer)
+**Original repository:** [aimagelab/multimodal-garment-designer](https://github.com/aimagelab/multimodal-garment-designer)
+
+The original authors retain credit for their model, architecture, and existing implementation. This repository documents the independent research experiments and analysis built around that work.
