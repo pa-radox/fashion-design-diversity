@@ -6,6 +6,7 @@ from PIL import Image
 from diffusers import AutoencoderKL, DDIMScheduler
 from transformers import CLIPTextModel, CLIPTokenizer
 from diffusers import UNet2DConditionModel
+from random import randrange
 
 from src.mgd_pipelines.mgd_pipe import MGDPipe
 
@@ -14,9 +15,9 @@ from src.mgd_pipelines.mgd_pipe import MGDPipe
 # EXPERIMENT SETTINGS
 # ------------------------------------------------------------
 
-NUM_VARIATIONS = 3
+NUM_VARIATIONS = 1
 
-NUM_INFERENCE_STEPS = 20
+NUM_INFERENCE_STEPS = 10
 
 GUIDANCE_SCALE = 7.5
 
@@ -35,8 +36,8 @@ BASE_SEED = 1000
 # Start with 1.0 for the actual experiment.
 #
 
-SKETCH_COND_RATE = 0.5
-START_COND_RATE = 0.25
+SKETCH_COND_RATE = 0.75
+START_COND_RATE = 0.10
 
 # ============================================================
 # SETTINGS
@@ -54,7 +55,7 @@ DATA_ROOT = (
 
 OUTPUT_DIR = "specific_seed_" + str(SKETCH_COND_RATE) + "_" + str(START_COND_RATE)
 
-PERSON_INDEX = 0
+PERSON_INDEX = 0 #assigned later
 
 # ============================================================
 # OUTPUT DIRECTORY
@@ -183,12 +184,18 @@ dataset = VitonHDDataset(
     size=(512, 384),
 )
 
+print(len(dataset))
+print(len(dataset.c_names))
+print(len(dataset.im_names))
+print(len(dataset.dataroot_names))
+
 print("Dataset loaded!")
 
 # ============================================================
 # SELECT PERSON
 # ============================================================
 
+PERSON_INDEX = randrange(len(dataset))
 sample = dataset[PERSON_INDEX]
 
 print(
@@ -343,9 +350,8 @@ for i in range(NUM_VARIATIONS):
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 
-    # --------------------------------------------------------
     # GENERATE
-    # --------------------------------------------------------
+    print("Starting generation...")
 
     result = mgd_pipe(
         prompt=prompt,
@@ -362,47 +368,34 @@ for i in range(NUM_VARIATIONS):
         output_type="pil",
     )
 
+    print("Generation complete!")
+
     generated = result.images[0]
 
-    # --------------------------------------------------------
     # SAVE RAW OUTPUT
-    # --------------------------------------------------------
+    raw_filename = f"var_{variation_number:02d}_raw.png"
+    raw_path = os.path.join(OUTPUT_DIR, raw_filename)
 
-    raw_filename = (
-        f"var_{variation_number:02d}_raw.png"
-    )
+    print("Saving raw image to:", raw_path)
+    generated.save(raw_path)
 
-    generated.save(
-        os.path.join(
-            OUTPUT_DIR,
-            raw_filename
-        )
-    )
+    print("Raw image saved!")
 
-    # --------------------------------------------------------
     # COMPOSITE
-    # --------------------------------------------------------
-
     generated_np = np.array(generated).astype(np.float32)
-    final_np = generated_np * mask_np+original_np * (1 - mask_np)
-    final_np = np.clip(final_np,0,255).astype(np.uint8)
+    final_np = generated_np * mask_np + original_np * (1 - mask_np)
+    final_np = np.clip(final_np, 0, 255).astype(np.uint8)
 
     final_image = Image.fromarray(final_np)
 
-    # --------------------------------------------------------
-    # SAVE FINAL IMAGE
-    # --------------------------------------------------------
+    # SAVE FINAL OUTPUT
+    filename = f"var_{variation_number:02d}.png"
+    final_path = os.path.join(OUTPUT_DIR, filename)
 
-    filename = (f"var_{variation_number:02d}.png")
+    print("Saving final image to:", final_path)
+    final_image.save(final_path)
 
-    final_image.save(
-        os.path.join(
-            OUTPUT_DIR,
-            filename
-        )
-    )
-
-    print("Saved:",filename)
+    print("Final image saved!")
 
 
 # ============================================================
