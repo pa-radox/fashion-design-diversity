@@ -15,9 +15,9 @@ from src.mgd_pipelines.mgd_pipe import MGDPipe
 # EXPERIMENT SETTINGS
 # ------------------------------------------------------------
 
-NUM_VARIATIONS = 1
+NUM_VARIATIONS = 3
 
-NUM_INFERENCE_STEPS = 10
+NUM_INFERENCE_STEPS = 30
 
 GUIDANCE_SCALE = 7.5
 
@@ -36,7 +36,7 @@ BASE_SEED = 1000
 # Start with 1.0 for the actual experiment.
 #
 
-SKETCH_COND_RATE = 0.75
+SKETCH_COND_RATE = 1
 START_COND_RATE = 0.10
 
 # ============================================================
@@ -49,7 +49,7 @@ MGD_WEIGHTS = r"C:\mgd_models\dresscode.pth"
 
 DATA_ROOT = (
     r"C:\Users\osun2\IdeaProjects"
-    r"\multimodal-garment-designer"
+    r"\multimodal-garment-designer-fork"
     r"\assets\data\vitonhd"
 )
 
@@ -319,6 +319,8 @@ print("Sketch conditioning:",SKETCH_COND_RATE)
 print("Inference steps:",NUM_INFERENCE_STEPS)
 
 print("Base seed:",BASE_SEED)
+
+print("Person Index:",PERSON_INDEX)
 
 print()
 print("This will be VERY slow on CPU.")
