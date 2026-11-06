@@ -1,219 +1,169 @@
-# Multimodal Garment Designer (ICCV 2023)
-### Human-Centric Latent Diffusion Models for Fashion Image Editing
-[**Alberto Baldrati**](https://scholar.google.com/citations?hl=en&user=I1jaZecAAAAJ)**\***,
-[**Davide Morelli**](https://scholar.google.com/citations?user=UJ4D3rYAAAAJ&hl=en)**\***,
-[**Giuseppe Cartella**](https://scholar.google.com/citations?hl=en&user=0sJ4VCcAAAAJ),
-[**Marcella Cornia**](https://scholar.google.com/citations?hl=en&user=DzgmSJEAAAAJ),
-[**Marco Bertini**](https://scholar.google.com/citations?user=SBm9ZpYAAAAJ&hl=en),
-[**Rita Cucchiara**](https://scholar.google.com/citations?hl=en&user=OM3sZEoAAAAJ)
-
-**\*** Equal contribution.
-
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2304.02051)
-[![GitHub Stars](https://img.shields.io/github/stars/aimagelab/multimodal-garment-designer?style=social)](https://github.com/aimagelab/multimodal-garment-designer)
-
-This is the **official repository** for the [**paper**](https://arxiv.org/abs/2304.02051) "*Multimodal Garment Designer: Human-Centric Latent Diffusion Models for Fashion Image Editing*".
-
-🔥🔥 **[21/03/2024] If you are interested in multimodal fashion image editing take a look at our most recent work [Multimodal-Conditioned Latent Diffusion Models for Fashion Image Editing](https://arxiv.org/abs/2403.14828). We introduce Ti-MGD a novel approach that also integrates fabric texture conditioning [![Repo](https://badgen.net/badge/icon/GitHub?icon=github&label)](https://github.com/aimagelab/Ti-MGD)**
+# Exploring Design Diversity in AI-Generated Fashion
 
 ## Overview
 
-<p align="center">
-    <img src="images/1.gif" style="max-width:500px">
-</p>
+Generative artificial intelligence can assist fashion designers by producing multiple design concepts from a single initial idea. However, how much diversity can generative models achieve when given the same garment sketch?
 
->**Abstract**: <br>
-> Fashion illustration is used by designers to communicate their vision and to bring the design idea from conceptualization to realization, showing how clothes interact with the human body. In this context, computer vision can thus be used to improve the fashion design process. Differently from previous works that mainly focused on the virtual try-on of garments, we propose the task of multimodal-conditioned fashion image editing, guiding the generation of human-centric fashion images by following multimodal prompts, such as text, human body poses, and garment sketches. We tackle this problem by proposing a new architecture based on latent diffusion models, an approach that has not been used before in the fashion domain. Given the lack of existing datasets suitable for the task, we also extend two existing fashion datasets, namely Dress Code and VITON-HD, with multimodal annotations collected in a semi-automatic manner. Experimental results on these new datasets demonstrate the effectiveness of our proposal, both in terms of realism and coherence with the given multimodal inputs.
+This project investigates the diversity of AI-generated fashion designs by generating multiple outputs from identical sketch inputs and examining how generation settings affect the resulting designs.
 
-## Citation
-If you make use of our work, please cite our paper:
+The study uses Multimodal Garment Designer (MGD) as its primary model and investigates its behavior under different conditioning configurations. The broader goal is to evaluate the range of designs AI can produce from a shared starting point and investigate how this diversity can be measured and compared across generative models.
 
-```bibtex
-@inproceedings{baldrati2023multimodal,
-  title={Multimodal Garment Designer: Human-Centric Latent Diffusion Models for Fashion Image Editing},
-  author={Baldrati, Alberto and Morelli, Davide and Cartella, Giuseppe and Cornia, Marcella and Bertini, Marco and Cucchiara, Rita},
-  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
-  year={2023}
-}
-```
+## Research Question
 
-## Getting Started
+**How diverse can AI-generated garment designs be when generated from the same input sketch?**
 
-We recommend using the [**Anaconda**](https://www.anaconda.com/) package manager to avoid dependency/reproducibility
-problems.
-For Linux systems, you can find a conda installation
-guide [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html).
+## Research Contributions
 
-### Installation
+This project builds upon an existing generative model rather than introducing an entirely new architecture. The original model and the research contributions are distinguished below.
 
-1. Clone the repository
+### Original Implementation
 
-```sh
-git clone https://github.com/aimagelab/multimodal-garment-designer
-```
+The following components originate from the existing [Multimodal Garment Designer (MGD) repository](https://github.com/aimagelab/multimodal-garment-designer):
 
-2. Install Python dependencies
+- **Model architecture:** The underlying garment-generation architecture and its integration with Stable Diffusion inpainting.
+- **Pretrained weights:** The existing pretrained model parameters.
+- **Generation pipeline:** The original framework for generating garment designs using multimodal conditioning.
+- **Existing model utilities:** Supporting code and preprocessing components inherited from the original implementation.
 
-```sh
-conda env create -n mgd -f environment.yml
-conda activate mgd
-```
+These components provide the foundation for the experiments conducted in this project.
 
-Alternatively, you can create a new conda environment and install the required packages manually:
+### My Contributions
 
-```sh
-conda create -n mgd -y python=3.9
-conda activate mgd
-pip install torch==1.12.1 torchmetrics==0.11.0 opencv-python==4.7.0.68 diffusers==0.12.0 transformers==4.25.1 accelerate==0.15.0 clean-fid==0.1.35 torchmetrics[image]==0.11.0
-```
+The original implementation is used as the basis for an independent investigation of AI-generated design diversity.
 
-## Inference
+My contributions include:
 
-To run the inference please use the following:
+- **Research design:** Formulating a research question focused on the diversity of AI-generated garment designs.
+- **Experimental configuration:** Modifying and systematically testing conditioning parameters to investigate their effects on generated outputs.
+- **Repeated generation:** Generating multiple designs from the same input sketches using different random seeds to examine the variation between outputs.
+- **Diversity evaluation:** Developing an evaluation approach to quantify and analyze differences between generated designs.
+- **Visual analysis:** Comparing generated designs to identify variation in garment silhouettes, shapes, colors, patterns, and details.
+- **Model comparison:** Developing a framework for comparing MGD with other generative models under controlled input conditions, where technically feasible.
 
-```
-python src/eval.py --dataset_path <path> --batch_size <int> --mixed_precision fp16 --output_dir <path> --save_name <string> --num_workers_test <int> --sketch_cond_rate 0.2 --dataset <dresscode|vitonhd> --start_cond_rate 0.0 --test_order <paired|unpaired>
-```
+The evaluation, comparison, and analysis components are part of the research workflow and will be documented according to their implementation status. The project does not claim ownership of the original MGD architecture or pretrained model.
 
-- ```dataset_path``` is the path to the dataset (change accordingly to the dataset parameter)
-- ```dataset``` dataset name to be used
-- ```output_dir``` path to the output directory
-- ```save_name``` name of the output dir subfolder where the generated images are saved
-- ```start_cond_rate``` rate {0.0,1.0} of denoising steps that will be used as offset to start sketch conditioning
-- ```sketch_cond_rate``` rate {0.0,1.0} of denoising steps in which sketch cond is applied
-- ```test_order``` test setting (paired | unpaired)
+## Methodology
 
-Note that we provide a few sample images to test MGD simply by cloning this repo (*i.e.*, assets/data). To execute the code set 
-- Dress Code Multimodal dataset
-    - ```dataset_path``` to ```../assets/data/dresscode```
-    - ```dataset``` to ```dresscode```
-- Viton-HD Multimodal dataset
-    - ```dataset_path``` to ```../assets/data/vitonhd```
-    - ```dataset``` to ```vitonhd```
+### Primary Model
 
-It is possible to run the inference on the whole Dress Code Multimodal or Viton-HD Multimodal dataset simply changing the ```dataset_path``` and ```dataset``` according with the downloaded and prepared datasets (see sections below).
+The primary model is Multimodal Garment Designer (MGD), an image-to-image garment-generation system that uses garment sketches and additional conditioning information to guide generation.
 
+The study focuses on evaluating the diversity of its outputs rather than developing a new generative architecture.
 
-## Pre-trained models
-The model and checkpoints are available via torch.hub.
+### Experimental Procedure
 
-Load the MGD denoising UNet model using the following code:
+1. Select garment sketches to serve as input designs.
+2. Generate multiple outputs from each sketch using different random seeds.
+3. Repeat generation under different conditioning configurations.
+4. Compare outputs generated from the same sketch.
+5. Calculate diversity metrics and conduct visual analysis.
+6. Where feasible, compare results with other generative models using matched inputs and documented settings.
 
-```
-import torch
-unet = torch.hub.load(
-    dataset=<dataset>, 
-    repo_or_dir='aimagelab/multimodal-garment-designer', 
-    source='github', 
-    model='mgd', 
-    pretrained=True
-    )
-```
+Using identical input sketches across configurations allows the study to investigate how generation settings influence the variation observed between outputs.
 
-- ```dataset``` dataset name (dresscode | vitonhd)
+### Experimental Variables
 
-Use the denoising network with our custom diffusers pipeline as follow:
+The experiment investigates two conditioning parameters:
 
-```
-from src.mgd_pipelines.mgd_pipe import MGDPipe
-from diffusers import AutoencoderKL, DDIMScheduler
-from transformers import CLIPTextModel, CLIPTokenizer
+- **Sketch-conditioning rate (`sketch_cond_rate`):** A parameter used to control the influence of sketch conditioning.
+- **Starting-image-conditioning rate (`start_cond_rate`):** A parameter used to control the influence of the starting-image condition.
 
-pretrained_model_name_or_path = "runwayml/stable-diffusion-inpainting"
+These settings are varied to investigate their relationship with generated design diversity. Final parameter values will be documented alongside the experimental results.
 
-text_encoder = CLIPTextModel.from_pretrained(
-    pretrained_model_name_or_path, 
-    subfolder="text_encoder"
-    )
+Other generation settings, including the input sketch and relevant sampling parameters, will be controlled wherever possible.
 
-vae = AutoencoderKL.from_pretrained(
-    pretrained_model_name_or_path, 
-    subfolder="vae"
-    )
+## Dataset
 
-tokenizer = CLIPTokenizer.from_pretrained(
-    pretrained_model_name_or_path,
-    subfolder="tokenizer",
-    )
+The project uses garment-design data to provide input sketches and relevant visual information.
 
-val_scheduler = DDIMScheduler.from_pretrained(
-    pretrained_model_name_or_path,
-    subfolder="scheduler"
-    )
-val_scheduler.set_timesteps(50)
+Potential data sources include:
 
-mgd_pipe = MGDPipe(
-    text_encoder=text_encoder,
-    vae=vae,
-    unet=unet,
-    tokenizer=tokenizer,
-    scheduler=val_scheduler,
-    )
-```
+- **DressCode:** A virtual try-on dataset containing garment images and associated annotations.
+- **VITON-HD:** A high-resolution virtual try-on dataset containing clothing images and associated annotations.
 
-For an extensive usage case see the file ```eval.py``` in the main repo.
+The final documentation will identify the datasets and splits actually used, the number of input sketches evaluated, and the preprocessing procedures applied.
 
-## Datasets
-We do not hold rights on the original Dress Code and Viton-HD datasets. Please refer to the original papers for more information.
+## Evaluation
 
-Start by downloading the original datasets from the following links:
-- Viton-HD **[[link](https://github.com/shadow2496/VITON-HD)]**
-- Dress Code **[[link](https://github.com/aimagelab/dress-code)]**
+### Primary Evaluation: Design Diversity
 
+The primary objective is to determine how much variation can be produced from a single garment sketch.
 
-Download the Dress Code Multimodal and Viton-HD Multimodal additional data annotations from here.
+Potential evaluation approaches include:
 
-- Dress Code Multimodal **[[link](https://drive.google.com/file/d/1dwnAi1CNmmF_YdbIDfm8078dGh4ci47L/view?usp=sharing)]**
-- Viton-HD Multimodal **[[link](https://drive.google.com/file/d/1Z2b9YkyBPA_9ZDC54Y5muW9Q8yfAqWSH/view?usp=sharing)]**
+- **Visual feature diversity:** Measuring differences between generated images in a feature representation space.
+- **Structural diversity:** Examining variation in garment silhouettes, shapes, and major design components.
+- **Visual analysis:** Comparing generated designs to identify differences in patterns, colors, details, and overall appearance.
 
-### Dress Code Multimodal Data Preparation
-Once data is downloaded prepare the dataset folder as follows:
+The final implementation will specify which metrics are used, how they are calculated, and what aspects of diversity they measure.
 
-<pre>
-Dress Code
-| <b>fine_captions.json</b>
-| <b>coarse_captions.json</b>
-| test_pairs_paired.txt
-| test_pairs_unpaired.txt
-| train_pairs.txt
-| <b>test_stitch_map</b>
-|---- [category]
-|-------- images
-|-------- keypoints
-|-------- skeletons
-|-------- dense
-|-------- <b>im_sketch</b>
-|-------- <b>im_sketch_unpaired</b>
-...
-</pre>
+### Secondary Evaluation: Design Preservation
 
-### Viton-HD Multimodal Data Preparation
-Once data is downloaded prepare the dataset folder as follows:
+Diversity alone does not establish whether generated outputs remain relevant to the original design.
 
-<pre>
-Viton-HD
-| <b>captions.json</b>
-|---- train
-|-------- image
-|-------- cloth
-|-------- image-parse-v3
-|-------- openpose_json
-|-------- <b>im_sketch</b>
-|-------- <b>im_sketch_unpaired</b>
-...
-|---- test
-...
-|-------- <b>im_sketch</b>
-|-------- <b>im_sketch_unpaired</b>
-...
-</pre>
+A secondary evaluation will examine how well generated garments preserve important structural characteristics of the input sketch. This helps contextualize the diversity measurements and distinguish meaningful design variation from outputs that depart substantially from the intended garment concept.
 
+## Results
 
-## TODO
-- [ ] training code
+*Experimental results will be added after data collection and analysis are complete.*
 
-## Acknowledgements
-This work has partially been supported by the PNRR project “Future Artificial Intelligence Research (FAIR)”, by the PRIN project “CREATIVE: CRoss-modal understanding and gEnerATIon of Visual and tExtual content” (CUP B87G22000460001), both co-funded by the Italian Ministry of University and Research, and by the European Commission under European Horizon 2020 Programme, grant number 101004545 - ReInHerit.
+### Quantitative Results
 
-## LICENSE
-<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />All material is available under [Creative Commons BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). You can **use, redistribute, and adapt** the material for **non-commercial purposes**, as long as you give appropriate credit by **citing our paper** and **indicate any changes** you've made.
+The final report will include the selected diversity metrics, summary statistics, sample counts, and comparisons across experimental configurations.
+
+| Experimental Configuration | Diversity Metric(s) | Design Preservation |
+|---|---|---|
+| Configuration 1 | TBD | TBD |
+| Configuration 2 | TBD | TBD |
+| Configuration 3 | TBD | TBD |
+
+### Qualitative Results
+
+Visual comparisons will show multiple designs generated from the same input sketch. These examples will illustrate the range of variation produced under different generation conditions.
+
+### Discussion
+
+The analysis will investigate:
+
+- The range of design diversity achievable from a single sketch.
+- How conditioning configurations influence generated variation.
+- Which aspects of garment design vary most across outputs.
+- How design diversity relates to preservation of the original concept.
+- How the observed results compare across generative models, where applicable.
+- Limitations of the datasets, models, and evaluation methods.
+
+## Technologies
+
+- Python
+- PyTorch
+- Hugging Face Diffusers
+- Stable Diffusion inpainting
+- NumPy
+- Image-processing and evaluation libraries
+
+## Project Status
+
+**In progress.**
+
+The project builds upon the existing MGD implementation while developing an experimental framework for investigating AI-generated garment-design diversity. Generation experiments, evaluation, and model comparisons will be documented as they are implemented and completed.
+
+## Reproducibility
+
+The final repository will document:
+
+- Software environment and dependency versions.
+- Original model and checkpoint sources.
+- Dataset sources, splits, and preprocessing.
+- Experimental conditioning configurations.
+- Random seeds and generation settings.
+- Evaluation metrics and analysis procedures.
+
+Large datasets and pretrained weights are not included unless explicitly stated.
+
+## Acknowledgments
+
+This project builds upon the Multimodal Garment Designer implementation.
+
+**Original repository:** [aimagelab/multimodal-garment-designer](https://github.com/aimagelab/multimodal-garment-designer)
+
+The original authors retain credit for their model, architecture, and existing implementation. This repository documents the independent research experiments and analysis built around that work.
