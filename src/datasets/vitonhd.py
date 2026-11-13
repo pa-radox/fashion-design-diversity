@@ -81,15 +81,8 @@ class VitonHDDataset(data.Dataset):
         else:
             filename = os.path.join(dataroot, f"{phase}_pairs.txt")
 
-        print("Dataset root:", os.path.abspath(dataroot))
-        print("Pair file being read:", os.path.abspath(filename))
-        print("Pair file exists:", os.path.exists(filename))
-
         with open(filename, "r") as f:
             lines = [line.strip() for line in f if line.strip()]
-
-        print("Number of nonempty lines in pair file:", len(lines))
-        print("First 5 entries:", lines[:5])
 
         with open(filename, 'r') as f:
             data_len = len(f.readlines())

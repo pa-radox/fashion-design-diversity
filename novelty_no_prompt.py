@@ -17,7 +17,7 @@ from src.mgd_pipelines.mgd_pipe import MGDPipe
 
 NUM_VARIATIONS = 3
 
-NUM_INFERENCE_STEPS = 30
+NUM_INFERENCE_STEPS = 20
 
 GUIDANCE_SCALE = 7.5
 
@@ -37,7 +37,7 @@ BASE_SEED = 1000
 #
 
 SKETCH_COND_RATE = 1
-START_COND_RATE = 0.10
+START_COND_RATE = 0
 
 # ============================================================
 # SETTINGS
@@ -298,7 +298,8 @@ mask_np = mask_np[:, :, None]
 # TEXT PROMPT
 # ============================================================
 
-prompt = "a fashionable garment with distinctive and unique design details"
+#prompt = "a fashionable garment with distinctive and unique design details. experiment with colors, patterns, silhouettes, sleeves, necklines, etc."
+prompt = "a fashionable garment with distinctive and unique design details."
 
 # ============================================================
 # START EXPERIMENT
