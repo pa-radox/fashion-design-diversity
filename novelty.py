@@ -28,7 +28,7 @@ DATA_ROOT = (
     r"\assets\data\vitonhd"
 )
 
-OUTPUT_DIR = "mgd_experiment2"
+OUTPUT_DIR = "obsolete_tests/mgd_experiment2"
 
 PERSON_INDEX = 0
 
