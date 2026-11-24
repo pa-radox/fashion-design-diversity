@@ -1,0 +1,21 @@
+
+name: sd_baselines
+
+channels:
+  - pytorch
+  - defaults
+
+dependencies:
+  - python=3.10
+  - pip
+  - numpy=1.23.5
+  - pillow
+  - pip:
+      - torch==1.12.1+cpu
+      - torchvision==0.13.1+cpu
+      - diffusers==0.20.2
+      - transformers==4.30.2
+      - accelerate==0.21.0
+      - huggingface_hub==0.16.4
+      - safetensors
+      - opencv-python
