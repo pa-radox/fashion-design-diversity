@@ -9,11 +9,9 @@ from diffusers import UNet2DConditionModel
 from random import randrange
 
 from src.mgd_pipelines.mgd_pipe import MGDPipe
+from src.datasets.vitonhd import VitonHDDataset
 
-
-# ------------------------------------------------------------
 # EXPERIMENT SETTINGS
-# ------------------------------------------------------------
 
 NUM_VARIATIONS = 3
 
@@ -25,9 +23,7 @@ GUIDANCE_SCALE = 7.5
 # Each variation gets BASE_SEED + variation number.
 BASE_SEED = 1000
 
-# ------------------------------------------------------------
 # SKETCH CONDITIONING
-# ------------------------------------------------------------
 #
 # 1.0 = strongest sketch conditioning
 # 0.5 = weaker sketch conditioning
@@ -39,9 +35,7 @@ BASE_SEED = 1000
 SKETCH_COND_RATE = 1
 START_COND_RATE = 0
 
-# ============================================================
 # SETTINGS
-# ============================================================
 
 SD_PATH = r"C:\mgd_models\stable-diffusion-inpainting"
 
@@ -55,21 +49,14 @@ DATA_ROOT = (
 
 OUTPUT_DIR = "specific_seed_" + str(SKETCH_COND_RATE) + "_" + str(START_COND_RATE)
 
-PERSON_INDEX = 0 #assigned later
-
-# ============================================================
 # OUTPUT DIRECTORY
-# ============================================================
 
 os.makedirs(
     OUTPUT_DIR,
     exist_ok=True
 )
 
-
-# ============================================================
 # LOAD MGD UNET
-# ============================================================
 
 print("Loading MGD UNet...")
 
@@ -94,10 +81,7 @@ unet.eval()
 
 print("MGD UNet loaded!")
 
-
-# ============================================================
 # LOAD STABLE DIFFUSION
-# ============================================================
 
 print("Loading Stable Diffusion components...")
 
@@ -138,10 +122,7 @@ scheduler.set_timesteps(
     NUM_INFERENCE_STEPS
 )
 
-
-# ============================================================
 # CREATE MGD PIPELINE
-# ============================================================
 
 print("Creating MGD pipeline...")
 
@@ -155,14 +136,9 @@ mgd_pipe = MGDPipe(
 
 print("MGD PIPELINE LOADED!")
 
-
-# ============================================================
 # LOAD VITON-HD
-# ============================================================
 
 print("Loading VITON-HD dataset...")
-
-from src.datasets.vitonhd import VitonHDDataset
 
 dataset = VitonHDDataset(
     dataroot_path=DATA_ROOT,
@@ -191,9 +167,7 @@ print(len(dataset.dataroot_names))
 
 print("Dataset loaded!")
 
-# ============================================================
 # SELECT PERSON
-# ============================================================
 
 PERSON_INDEX = randrange(len(dataset))
 sample = dataset[PERSON_INDEX]
@@ -208,9 +182,7 @@ print(
     sample["im_name"]
 )
 
-# ============================================================
 # INPUTS
-# ============================================================
 
 image = sample["image"].unsqueeze(0)
 pose_map = sample["pose_map"].unsqueeze(0)
@@ -220,13 +192,11 @@ mask_image = sample["inpaint_mask"].unsqueeze(0)
 # im_sketch_unpaired image internally.
 sketch = sample["im_sketch"].unsqueeze(0)
 
-# ============================================================
 # SAVE INPUTS
-# ============================================================
 
 original_np = (image[0].permute(1, 2, 0).cpu().numpy())
 original_np = (original_np + 1) / 2 * 255
-original_np = np.clip(original_np,0,255).astype(np.uint8)
+original_np = np.clip(original_np, 0, 255).astype(np.uint8)
 
 Image.fromarray(original_np).save(
     os.path.join(
@@ -246,7 +216,7 @@ if mask_debug.ndim == 3:
 
 mask_debug = mask_debug.numpy() * 255
 
-mask_debug = np.clip(mask_debug,0,255).astype(np.uint8)
+mask_debug = np.clip(mask_debug, 0, 255).astype(np.uint8)
 
 Image.fromarray(mask_debug).save(
     os.path.join(
@@ -266,7 +236,7 @@ if sketch_debug.shape[0] == 1:
 
 sketch_debug = sketch_debug.numpy() * 255
 
-sketch_debug = np.clip(sketch_debug,0,255).astype(np.uint8)
+sketch_debug = np.clip(sketch_debug, 0, 255).astype(np.uint8)
 
 Image.fromarray(sketch_debug).save(
     os.path.join(
@@ -275,17 +245,13 @@ Image.fromarray(sketch_debug).save(
     )
 )
 
-# ============================================================
 # ORIGINAL IMAGE FOR COMPOSITING
-# ============================================================
 
 original_np = image[0].permute(1, 2, 0).cpu().numpy()
 original_np = (original_np + 1) / 2 * 255
-original_np = np.clip(original_np,0,255)
+original_np = np.clip(original_np, 0, 255)
 
-# ============================================================
 # MASK FOR COMPOSITING
-# ============================================================
 
 mask_np = mask_image[0].cpu().numpy()
 
@@ -294,42 +260,26 @@ if mask_np.ndim == 3:
 
 mask_np = mask_np[:, :, None]
 
-# ============================================================
 # TEXT PROMPT
-# ============================================================
 
-#prompt = "a fashionable garment with distinctive and unique design details. experiment with colors, patterns, silhouettes, sleeves, necklines, etc."
+# prompt = "a fashionable garment with distinctive and unique design details. experiment with colors, patterns, silhouettes, sleeves, necklines, etc."
 prompt = "a fashionable garment with distinctive and unique design details."
 
-# ============================================================
 # START EXPERIMENT
-# ============================================================
 
-print()
-print("========================================")
-print("MGD DESIGN DIVERSITY EXPERIMENT")
-print("========================================")
-print()
+print("Number of variations:", NUM_VARIATIONS)
 
-print("Number of variations:",NUM_VARIATIONS)
+print("Prompt:", prompt)
 
-print("Prompt:",prompt)
+print("Sketch conditioning:", SKETCH_COND_RATE)
 
-print("Sketch conditioning:",SKETCH_COND_RATE)
+print("Inference steps:", NUM_INFERENCE_STEPS)
 
-print("Inference steps:",NUM_INFERENCE_STEPS)
+print("Base seed:", BASE_SEED)
 
-print("Base seed:",BASE_SEED)
+print("Person Index:", PERSON_INDEX)
 
-print("Person Index:",PERSON_INDEX)
-
-print()
-print("This will be VERY slow on CPU.")
-print()
-
-# ============================================================
 # GENERATE VARIATIONS
-# ============================================================
 
 for i in range(NUM_VARIATIONS):
     variation_number = i + 1
@@ -342,11 +292,9 @@ for i in range(NUM_VARIATIONS):
     )
     print("----------------------------------------")
 
-    print("Seed:",seed)
+    print("Seed:", seed)
 
-    # --------------------------------------------------------
     # SET RANDOM SEED
-    # --------------------------------------------------------
 
     torch.manual_seed(seed)
 
@@ -400,18 +348,9 @@ for i in range(NUM_VARIATIONS):
 
     print("Final image saved!")
 
-
-# ============================================================
 # DONE
-# ============================================================
+
+print("Results saved to:", OUTPUT_DIR)
 
 print()
-print("========================================")
-print("EXPERIMENT COMPLETE")
-print("========================================")
-print()
-
-print("Results saved to:",OUTPUT_DIR)
-
-print()
-print("Generated",NUM_VARIATIONS,"variations.")
+print("Generated", NUM_VARIATIONS, "variations.")

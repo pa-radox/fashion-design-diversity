@@ -7,10 +7,12 @@ from diffusers import (
     DDIMScheduler
 )
 from transformers import CLIPTokenizer
+import sys
+from src.datasets.vitonhd import VitonHDDataset
 
-# ============================================================
+
 # EXPERIMENT SETTINGS
-# ============================================================
+
 
 NUM_VARIATIONS = 3
 
@@ -20,9 +22,9 @@ GUIDANCE_SCALE = 7.5
 
 BASE_SEED = 1000
 
-# ============================================================
+
 # PATHS
-# ============================================================
+
 
 SD_PATH = r"C:\mgd_models\stable-diffusion-inpainting"
 
@@ -40,17 +42,15 @@ PERSON_INDEX = 0
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ============================================================
+
 # TEXT PROMPT
-# ============================================================
+
 
 prompt = (
     "a fashionable garment with distinctive and unique design details."
 )
 
-# ============================================================
 # LOAD TOKENIZER
-# ============================================================
 
 print("Loading tokenizer...")
 
@@ -60,19 +60,15 @@ tokenizer = CLIPTokenizer.from_pretrained(
     local_files_only=True
 )
 
-# ============================================================
 # LOAD VITON-HD
-# ============================================================
 
 print("Loading VITON-HD dataset...")
 
-import sys
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 sys.path.insert(0, PROJECT_ROOT)
 
-from src.datasets.vitonhd import VitonHDDataset
 
 dataset = VitonHDDataset(
     dataroot_path=DATA_ROOT,
@@ -97,18 +93,14 @@ dataset = VitonHDDataset(
 print("Dataset loaded!")
 print("Dataset size:", len(dataset))
 
-# ============================================================
 # SELECT PERSON
-# ============================================================
 
 sample = dataset[PERSON_INDEX]
 
 print("Using person sample:", PERSON_INDEX)
 print("Image:", sample["im_name"])
 
-# ============================================================
 # PREPARE INPUTS
-# ============================================================
 
 person_tensor = sample["image"]
 
@@ -141,9 +133,7 @@ sketch_np = sketch_np.astype("uint8")
 
 sketch_image = Image.fromarray(sketch_np).convert("L")
 
-# ============================================================
 # SAVE EXPERIMENT INPUTS
-# ============================================================
 
 person_image.save(
     os.path.join(OUTPUT_DIR, "original_person.png")
@@ -157,9 +147,7 @@ sketch_image.save(
     os.path.join(OUTPUT_DIR, "garment_sketch.png")
 )
 
-# ============================================================
 # LOAD STABLE DIFFUSION INPAINTING
-# ============================================================
 
 print("Loading Stable Diffusion Inpainting...")
 
@@ -182,9 +170,9 @@ pipe.enable_attention_slicing()
 
 print("Stable Diffusion Inpainting loaded!")
 
-# ============================================================
+
 # EXPERIMENT INFORMATION
-# ============================================================
+
 
 print()
 print("========================================")
@@ -202,9 +190,9 @@ print()
 print("Generating on CPU. This may take a while.")
 print()
 
-# ============================================================
+
 # GENERATE VARIATIONS
-# ============================================================
+
 
 for i in range(NUM_VARIATIONS):
 
@@ -254,9 +242,9 @@ for i in range(NUM_VARIATIONS):
 
     print("Saved:", output_path)
 
-# ============================================================
+
 # DONE
-# ============================================================
+
 
 print()
 print("========================================")

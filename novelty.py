@@ -9,11 +9,9 @@ from transformers import CLIPTextModel, CLIPTokenizer
 from diffusers import UNet2DConditionModel
 
 from src.mgd_pipelines.mgd_pipe import MGDPipe
+from src.datasets.vitonhd import VitonHDDataset
 
-
-# ============================================================
 # SETTINGS
-# ============================================================
 
 SD_PATH = r"C:\mgd_models\stable-diffusion-inpainting"
 
@@ -38,10 +36,7 @@ GUIDANCE_SCALE = 7.5
 # Keep this fixed so results are reproducible.
 BASE_SEED = 1234
 
-
-# ============================================================
 # EXPERIMENT PROMPTS
-# ============================================================
 #
 # The SAME person and SAME garment sketch are used for every
 # generation.
@@ -54,33 +49,20 @@ BASE_SEED = 1234
 
 PROMPTS = [
     "a frilly black blouse with transparent black long sleeves, gothic style",
-
     "a frilly white blouse with transparent white long sleeves, romantic style",
-
     "a fitted red blouse with puff sleeves and floral patterns",
-
     "a loose cream blouse with embroidered flowers and ruffled sleeves",
-
     "a dark blue blouse with geometric patterns and wide sleeves",
-
     "a pastel pink blouse with lace details and short puff sleeves",
-
     "a green blouse with asymmetrical details and layered fabric",
-
     "a black blouse with silver decorative patterns and bell sleeves",
 ]
 
-
-# ============================================================
 # CREATE OUTPUT DIRECTORY
-# ============================================================
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-
-# ============================================================
 # LOAD MGD UNET
-# ============================================================
 
 print("Loading MGD UNet...")
 
@@ -103,10 +85,7 @@ unet.eval()
 
 print("MGD UNet loaded!")
 
-
-# ============================================================
 # LOAD STABLE DIFFUSION COMPONENTS
-# ============================================================
 
 print("Loading Stable Diffusion components...")
 
@@ -143,10 +122,7 @@ scheduler = DDIMScheduler.from_pretrained(
 
 scheduler.set_timesteps(NUM_INFERENCE_STEPS)
 
-
-# ============================================================
 # CREATE PIPELINE
-# ============================================================
 
 print("Creating MGD pipeline...")
 
@@ -160,14 +136,9 @@ mgd_pipe = MGDPipe(
 
 print("MGD PIPELINE LOADED!")
 
-
-# ============================================================
 # LOAD VITON-HD DATASET
-# ============================================================
 
 print("Loading VITON-HD dataset...")
-
-from src.datasets.vitonhd import VitonHDDataset
 
 dataset = VitonHDDataset(
     dataroot_path=DATA_ROOT,
@@ -191,10 +162,7 @@ dataset = VitonHDDataset(
 
 print("Dataset loaded!")
 
-
-# ============================================================
 # GET PERSON / SKETCH
-# ============================================================
 
 sample = dataset[PERSON_INDEX]
 
@@ -207,7 +175,6 @@ print(
     "Image:",
     sample["im_name"]
 )
-
 
 image = sample["image"].unsqueeze(0)
 
@@ -224,10 +191,7 @@ mask_image = sample["inpaint_mask"].unsqueeze(0)
 
 sketch = sample["im_sketch"].unsqueeze(0)
 
-
-# ============================================================
 # SAVE ORIGINAL INPUTS
-# ============================================================
 
 original_np = (
     image[0]
@@ -253,10 +217,7 @@ Image.fromarray(
     )
 )
 
-
-# ============================================================
 # SAVE MASK
-# ============================================================
 
 mask_debug = mask_image[0].cpu()
 
@@ -282,10 +243,7 @@ Image.fromarray(
     )
 )
 
-
-# ============================================================
 # SAVE SKETCH
-# ============================================================
 
 sketch_debug = sketch[0].cpu()
 
@@ -311,10 +269,7 @@ Image.fromarray(
     )
 )
 
-
-# ============================================================
 # PREPARE ORIGINAL IMAGE FOR COMPOSITING
-# ============================================================
 
 original_np = (
     image[0]
@@ -332,10 +287,7 @@ original_np = np.clip(
     255
 )
 
-
-# ============================================================
 # PREPARE MASK FOR COMPOSITING
-# ============================================================
 
 mask_np = mask_image[0].cpu().numpy()
 
@@ -344,16 +296,7 @@ if mask_np.ndim == 3:
 
 mask_np = mask_np[:, :, None]
 
-
-# ============================================================
 # GENERATION LOOP
-# ============================================================
-
-print()
-print("========================================")
-print("STARTING MGD DESIGN DIVERSITY EXPERIMENT")
-print("========================================")
-print()
 
 print(
     "Number of designs:",
@@ -374,7 +317,6 @@ print()
 print("This will be VERY slow on CPU.")
 print()
 
-
 for i, prompt in enumerate(PROMPTS):
 
     print()
@@ -387,9 +329,7 @@ for i, prompt in enumerate(PROMPTS):
     print("Prompt:")
     print(prompt)
 
-    # --------------------------------------------------------
     # REPRODUCIBLE SEED
-    # --------------------------------------------------------
 
     seed = BASE_SEED + i
 
@@ -400,10 +340,7 @@ for i, prompt in enumerate(PROMPTS):
 
     print("Seed:", seed)
 
-
-    # --------------------------------------------------------
     # GENERATE
-    # --------------------------------------------------------
 
     result = mgd_pipe(
 
@@ -428,13 +365,9 @@ for i, prompt in enumerate(PROMPTS):
         output_type="pil",
     )
 
-
     generated = result.images[0]
 
-
-    # --------------------------------------------------------
     # SAVE RAW MGD OUTPUT
-    # --------------------------------------------------------
 
     raw_filename = (
         f"design_{i + 1:02d}_raw.png"
@@ -447,19 +380,15 @@ for i, prompt in enumerate(PROMPTS):
         )
     )
 
-
-    # --------------------------------------------------------
     # COMPOSITE WITH ORIGINAL PERSON
     #
     # Generated clothing stays inside the mask.
     # Everything outside the mask comes from the original
     # person image.
-    # --------------------------------------------------------
 
     generated_np = np.array(
         generated
     ).astype(np.float32)
-
 
     final_np = (
             generated_np * mask_np
@@ -467,22 +396,17 @@ for i, prompt in enumerate(PROMPTS):
             original_np * (1 - mask_np)
     )
 
-
     final_np = np.clip(
         final_np,
         0,
         255
     ).astype(np.uint8)
 
-
     final_image = Image.fromarray(
         final_np
     )
 
-
-    # --------------------------------------------------------
     # SAFE FILENAME
-    # --------------------------------------------------------
 
     safe_prompt = re.sub(
         r"[^a-zA-Z0-9]+",
@@ -490,12 +414,10 @@ for i, prompt in enumerate(PROMPTS):
         prompt
     ).strip("_")
 
-
     filename = (
         f"design_{i + 1:02d}_"
         f"{safe_prompt}.png"
     )
-
 
     final_image.save(
         os.path.join(
@@ -504,18 +426,11 @@ for i, prompt in enumerate(PROMPTS):
         )
     )
 
-
     print(
         "Saved:",
         filename
     )
 
-
-print()
-print("========================================")
-print("EXPERIMENT COMPLETE")
-print("========================================")
-print()
 print(
     "Results saved to:",
     OUTPUT_DIR
