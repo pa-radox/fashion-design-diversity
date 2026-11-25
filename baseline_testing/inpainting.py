@@ -170,14 +170,7 @@ pipe.enable_attention_slicing()
 
 print("Stable Diffusion Inpainting loaded!")
 
-
 # EXPERIMENT INFORMATION
-
-
-print()
-print("========================================")
-print("STABLE DIFFUSION INPAINTING BASELINE")
-print("========================================")
 
 print("Number of variations:", NUM_VARIATIONS)
 print("Prompt:", prompt)
@@ -190,9 +183,7 @@ print()
 print("Generating on CPU. This may take a while.")
 print()
 
-
 # GENERATE VARIATIONS
-
 
 for i in range(NUM_VARIATIONS):
 
@@ -242,14 +233,7 @@ for i in range(NUM_VARIATIONS):
 
     print("Saved:", output_path)
 
-
 # DONE
-
-
-print()
-print("========================================")
-print("INPAINTING EXPERIMENT COMPLETE")
-print("========================================")
 
 print("Results saved to:", OUTPUT_DIR)
 print("Generated", NUM_VARIATIONS, "variations.")
