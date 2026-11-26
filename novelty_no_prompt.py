@@ -19,18 +19,9 @@ NUM_INFERENCE_STEPS = 20
 
 GUIDANCE_SCALE = 7.5
 
-# Same base seed every time you run the experiment.
-# Each variation gets BASE_SEED + variation number.
 BASE_SEED = 1000
 
 # SKETCH CONDITIONING
-#
-# 1.0 = strongest sketch conditioning
-# 0.5 = weaker sketch conditioning
-# 0.25 = much weaker sketch conditioning
-#
-# Start with 1.0 for the actual experiment.
-#
 
 SKETCH_COND_RATE = 1
 START_COND_RATE = 0
