@@ -277,12 +277,10 @@ for i in range(NUM_VARIATIONS):
     variation_number = i + 1
     seed = BASE_SEED + i
 
-    print()
     print("----------------------------------------")
     print(
         f"VARIATION {variation_number}/{NUM_VARIATIONS}"
     )
-    print("----------------------------------------")
 
     print("Seed:", seed)
 
