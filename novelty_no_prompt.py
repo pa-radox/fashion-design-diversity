@@ -47,7 +47,7 @@ DATA_ROOT = (
     r"\assets\data\vitonhd"
 )
 
-OUTPUT_DIR = "specific_seed_" + str(SKETCH_COND_RATE) + "_" + str(START_COND_RATE)
+OUTPUT_DIR = "dataset_exploration"
 
 # OUTPUT DIRECTORY
 
@@ -160,16 +160,12 @@ dataset = VitonHDDataset(
     size=(512, 384),
 )
 
-print(len(dataset))
-print(len(dataset.c_names))
-print(len(dataset.im_names))
-print(len(dataset.dataroot_names))
-
 print("Dataset loaded!")
 
 # SELECT PERSON
 
-PERSON_INDEX = randrange(len(dataset))
+# PERSON_INDEX = randrange(len(dataset))
+PERSON_INDEX = 1952
 sample = dataset[PERSON_INDEX]
 
 print(
@@ -205,9 +201,7 @@ Image.fromarray(original_np).save(
     )
 )
 
-# ------------------------------------------------------------
 # MASK
-# ------------------------------------------------------------
 
 mask_debug = mask_image[0].cpu()
 
@@ -225,9 +219,7 @@ Image.fromarray(mask_debug).save(
     )
 )
 
-# ------------------------------------------------------------
 # SKETCH
-# ------------------------------------------------------------
 
 sketch_debug = sketch[0].cpu()
 

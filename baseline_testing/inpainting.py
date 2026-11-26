@@ -7,12 +7,14 @@ from diffusers import (
     DDIMScheduler
 )
 from transformers import CLIPTokenizer
+from random import randrange
 import sys
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, PROJECT_ROOT)
+print("Project root:", PROJECT_ROOT)
 from src.datasets.vitonhd import VitonHDDataset
 
-
 # EXPERIMENT SETTINGS
-
 
 NUM_VARIATIONS = 3
 
@@ -36,15 +38,9 @@ DATA_ROOT = (
 
 OUTPUT_DIR = "inpainting_baseline"
 
-# IMPORTANT:
-# Set this to the SAME PERSON_INDEX used in your MGD experiment.
-PERSON_INDEX = 0
-
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-
 # TEXT PROMPT
-
 
 prompt = (
     "a fashionable garment with distinctive and unique design details."
@@ -63,12 +59,6 @@ tokenizer = CLIPTokenizer.from_pretrained(
 # LOAD VITON-HD
 
 print("Loading VITON-HD dataset...")
-
-
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-sys.path.insert(0, PROJECT_ROOT)
-
 
 dataset = VitonHDDataset(
     dataroot_path=DATA_ROOT,
@@ -95,6 +85,8 @@ print("Dataset size:", len(dataset))
 
 # SELECT PERSON
 
+# PERSON_INDEX = randrange(len(dataset))
+PERSON_INDEX = 1952
 sample = dataset[PERSON_INDEX]
 
 print("Using person sample:", PERSON_INDEX)
@@ -103,8 +95,6 @@ print("Image:", sample["im_name"])
 # PREPARE INPUTS
 
 person_tensor = sample["image"]
-
-mask_tensor = sample["inpaint_mask"]
 
 sketch_tensor = sample["im_sketch"]
 
@@ -115,6 +105,10 @@ person_np = (person_np + 1) / 2 * 255
 person_np = person_np.clip(0, 255).astype("uint8")
 
 person_image = Image.fromarray(person_np).convert("RGB")
+
+# PREPARE MASK
+
+mask_tensor = sample["inpaint_mask"]
 
 # Convert mask from [0, 1] to [0, 255]
 mask_np = mask_tensor.squeeze().cpu().numpy()
