@@ -13,11 +13,11 @@ from src.datasets.vitonhd import VitonHDDataset
 
 # EXPERIMENT SETTINGS
 
-NUM_VARIATIONS = 3
+NUM_VARIATIONS = 5
 
-NUM_RATES_TESTED = 4
+NUM_RATES_TESTED = 2
 
-NUM_INFERENCE_STEPS = 20
+NUM_INFERENCE_STEPS = 10
 
 GUIDANCE_SCALE = 7.5
 
@@ -49,7 +49,7 @@ DATA_ROOT = (
     r"\assets\data\vitonhd"
 )
 
-OUTPUT_DIR = "dataset_exploration"
+OUTPUT_DIR = "rate_exploration2"
 
 # OUTPUT DIRECTORY
 
@@ -284,7 +284,7 @@ for j in range(NUM_RATES_TESTED):
             f"VARIATION {variation_number}/{NUM_VARIATIONS}"
         )
 
-        print("Seed:", seed+i)
+        print("Seed:", seed)
 
         # SET RANDOM SEED
 
@@ -296,6 +296,8 @@ for j in range(NUM_RATES_TESTED):
         # GENERATE
         print("Starting generation...")
 
+        sketch_rate = SKETCH_COND_RATE - 0.4*j
+
         result = mgd_pipe(
             prompt=prompt,
             image=image,
@@ -306,7 +308,7 @@ for j in range(NUM_RATES_TESTED):
             width=384,
             num_inference_steps=NUM_INFERENCE_STEPS,
             guidance_scale=GUIDANCE_SCALE,
-            sketch_cond_rate=SKETCH_COND_RATE - 0.05*j,
+            sketch_cond_rate=sketch_rate,
             start_cond_rate=START_COND_RATE,
             output_type="pil",
         )
@@ -316,7 +318,7 @@ for j in range(NUM_RATES_TESTED):
         generated = result.images[0]
 
         # SAVE RAW OUTPUT
-        raw_filename = f"var_{variation_number:02d}_{SKETCH_COND_RATE - 0.05*j}_raw.png"
+        raw_filename = f"var_{variation_number:02d}_{sketch_rate}_raw.png"
         raw_path = os.path.join(OUTPUT_DIR, raw_filename)
 
         print("Saving raw image to:", raw_path)
@@ -332,7 +334,7 @@ for j in range(NUM_RATES_TESTED):
         final_image = Image.fromarray(final_np)
 
         # SAVE FINAL OUTPUT
-        filename = f"var_{variation_number:02d}_{SKETCH_COND_RATE - 0.05*j}.png"
+        filename = f"var_{variation_number:02d}_{sketch_rate}.png"
         final_path = os.path.join(OUTPUT_DIR, filename)
 
         print("Saving final image to:", final_path)
