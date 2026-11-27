@@ -13,7 +13,7 @@ from src.datasets.vitonhd import VitonHDDataset
 
 # EXPERIMENT SETTINGS
 
-NUM_VARIATIONS = 3
+NUM_VARIATIONS = 5
 
 NUM_INFERENCE_STEPS = 8
 
@@ -23,7 +23,7 @@ BASE_SEED = 1000
 
 # SKETCH CONDITIONING
 
-SKETCH_COND_RATE = 1
+SKETCH_COND_RATE = 0.6
 START_COND_RATE = 0
 
 # SETTINGS
@@ -38,7 +38,7 @@ DATA_ROOT = (
     r"\assets\data\vitonhd"
 )
 
-OUTPUT_DIR = "prompt_exploration5"
+OUTPUT_DIR = "prompt_exploration6"
 
 # OUTPUT DIRECTORY
 
@@ -155,8 +155,8 @@ print("Dataset loaded!")
 
 # SELECT PERSON
 
-PERSON_INDEX = randrange(len(dataset))
-# PERSON_INDEX = 1952
+# PERSON_INDEX = randrange(len(dataset))
+PERSON_INDEX = 405
 sample = dataset[PERSON_INDEX]
 
 print(
@@ -244,14 +244,18 @@ mask_np = mask_np[:, :, None]
 
 # TEXT PROMPT
 
-prompts = [
-    "a realistic fashion garment design with "
-    "coherent garment construction and distinctive "
-    "design features, featuring nuanced color "
-    "distribution, complementary and contrasting "
-    "color accents, and varied visual treatments "
-    "across different garment components"
-]
+# prompts = [
+#     "a unique fashion garment design with "
+#     "coherent garment construction and distinctive "
+#     "design features, featuring an expressive use "
+#     "of color through gradients, subtle color "
+#     "transitions, contrasting accents, and varied "
+#     "color treatments across the garment"
+# ]
+prompts = ["a garment featuring multiple complementary and contrasting colors distributed across its design"
+           "with varied textile treatments and intentional surface designs, including printed motifs, "
+           "geometric patterns, stripes, and decorative details"
+           ]
 
 negative_prompt = (
     "dense fine speckling, tiny evenly distributed dots, "
