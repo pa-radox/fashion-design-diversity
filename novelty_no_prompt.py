@@ -5,17 +5,17 @@ import numpy as np
 from PIL import Image
 from diffusers import AutoencoderKL, DDIMScheduler
 from transformers import CLIPTextModel, CLIPTokenizer
-from diffusers import UNet2DConditionModel
-from random import randrange
+import random
 
 from src.mgd_pipelines.mgd_pipe import MGDPipe
 from src.datasets.vitonhd import VitonHDDataset
+import torchvision.transforms.functional as tf
 
 # EXPERIMENT SETTINGS
 
-NUM_VARIATIONS = 3
+NUM_VARIATIONS = 1
 
-NUM_INFERENCE_STEPS = 20
+NUM_INFERENCE_STEPS = 50
 
 GUIDANCE_SCALE = 7.5
 
@@ -30,7 +30,7 @@ START_COND_RATE = 0
 
 SD_PATH = r"C:\mgd_models\stable-diffusion-inpainting"
 
-MGD_WEIGHTS = r"C:\mgd_models\dresscode.pth"
+# MGD_WEIGHTS = r"C:\mgd_models\vitonhd.pth"
 
 DATA_ROOT = (
     r"C:\Users\osun2\IdeaProjects"
@@ -51,23 +51,15 @@ os.makedirs(
 
 print("Loading MGD UNet...")
 
-config = UNet2DConditionModel.load_config(
-    SD_PATH + "/unet"
+unet = torch.hub.load(
+    repo_or_dir="aimagelab/multimodal-garment-designer",
+    source="github",
+    model="mgd",
+    dataset="vitonhd",
+    pretrained=True
 )
 
-config["in_channels"] = 28
-
-unet = UNet2DConditionModel.from_config(
-    config
-)
-
-unet.load_state_dict(
-    torch.load(
-        MGD_WEIGHTS,
-        map_location="cpu"
-    )
-)
-
+unet = unet.to("cpu")
 unet.eval()
 
 print("MGD UNet loaded!")
@@ -139,7 +131,7 @@ dataset = VitonHDDataset(
         "im_mask",
         "inpaint_mask",
         "parse_mask_total",
-        "im_sketch"
+        "im_sketch",
     ),
 
     size=(512, 384),
@@ -152,6 +144,7 @@ print("Dataset loaded!")
 # PERSON_INDEX = randrange(len(dataset))
 PERSON_INDEX = 1952
 sample = dataset[PERSON_INDEX]
+im_parse = sample["im_parse"]
 
 print("Using person sample:", PERSON_INDEX)
 print("Image:", sample["im_name"])
@@ -265,7 +258,8 @@ for i in range(NUM_VARIATIONS):
     print("Seed:", seed)
 
     # SET RANDOM SEED
-
+    random.seed(seed)
+    np.random.seed(seed)
     torch.manual_seed(seed)
 
     if torch.cuda.is_available():
@@ -303,21 +297,46 @@ for i in range(NUM_VARIATIONS):
 
     print("Raw image saved!")
 
-    # COMPOSITE
-    generated_np = np.array(generated).astype(np.float32)
-    final_np = generated_np * mask_np + original_np * (1 - mask_np)
-    final_np = np.clip(final_np, 0, 255).astype(np.uint8)
+    # # COMPOSITE
+    # generated_np = np.array(generated).astype(np.float32)
+    # final_np = generated_np * mask_np + original_np * (1 - mask_np)
+    # final_np = np.clip(final_np, 0, 255).astype(np.uint8)
+    #
+    # final_image = Image.fromarray(final_np)
+    #
+    # # SAVE FINAL OUTPUT
+    # filename = f"var_{variation_number:02d}.png"
+    # final_path = os.path.join(OUTPUT_DIR, filename)
+    #
+    # print("Saving final image to:", final_path)
+    # final_image.save(final_path)
+    #
+    # print("Final image saved!")
 
-    final_image = Image.fromarray(final_np)
+    # Original image, converted from [-1, 1] to [0, 1]
+    gt_img = image[0] * 0.5 + 0.5
 
-    # SAVE FINAL OUTPUT
-    filename = f"var_{variation_number:02d}.png"
-    final_path = os.path.join(OUTPUT_DIR, filename)
+    # Get original human parsing map
+    im_parse = sample["im_parse"]
 
-    print("Saving final image to:", final_path)
-    final_image.save(final_path)
+    # Identify head pixels
+    seg_head = (
+            (im_parse == 1) |
+            (im_parse == 2) |
+            (im_parse == 4) |
+            (im_parse == 13)
+    )
 
-    print("Final image saved!")
+    true_head = gt_img * seg_head
+
+    # Use generated image everywhere except the head
+    fake_img = tf.pil_to_tensor(generated).float() / 255.0
+    generated_body = fake_img * (~seg_head)
+
+    final_img = true_head + generated_body
+    final_img = final_img.clamp(0, 1)
+
+    tf.to_pil_image(final_img).save(prompt + ".png")
 
 # DONE
 
