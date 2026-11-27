@@ -15,7 +15,7 @@ import torchvision.transforms.functional as tf
 
 NUM_VARIATIONS = 5
 
-NUM_INFERENCE_STEPS = 40
+NUM_INFERENCE_STEPS = 30
 
 GUIDANCE_SCALE = 7.5
 
@@ -40,7 +40,7 @@ DATA_ROOT = (
     r"\assets\data\vitonhd"
 )
 
-OUTPUT_DIR = "novelty_results"
+OUTPUT_DIR = "novelty_results2"
 
 # OUTPUT DIRECTORY
 
@@ -151,7 +151,6 @@ print("Dataset loaded!")
 def run_var(person_index, var_num):
     # SELECT PERSON
     sample = dataset[person_index]
-    im_parse = sample["im_parse"]
 
     print("Using person sample:", person_index)
 
@@ -170,7 +169,6 @@ def run_var(person_index, var_num):
     sketch = sample["im_sketch"].unsqueeze(0)
 
     # SAVE INPUTS
-
     original_np = (image[0].permute(1, 2, 0).cpu().numpy())
     original_np = (original_np + 1) / 2 * 255
     original_np = np.clip(original_np, 0, 255).astype(np.uint8)
@@ -183,14 +181,10 @@ def run_var(person_index, var_num):
     )
 
     # MASK
-
     mask_debug = mask_image[0].cpu()
-
     if mask_debug.ndim == 3:
         mask_debug = mask_debug.squeeze(0)
-
     mask_debug = mask_debug.numpy() * 255
-
     mask_debug = np.clip(mask_debug, 0, 255).astype(np.uint8)
 
     Image.fromarray(mask_debug).save(
@@ -201,9 +195,7 @@ def run_var(person_index, var_num):
     )
 
     # SKETCH
-
     sketch_debug = sketch[0].cpu()
-
     if sketch_debug.shape[0] == 1:
         sketch_debug = sketch_debug.squeeze(0)
 
@@ -218,21 +210,6 @@ def run_var(person_index, var_num):
         )
     )
 
-    # ORIGINAL IMAGE FOR COMPOSITING
-
-    original_np = image[0].permute(1, 2, 0).cpu().numpy()
-    original_np = (original_np + 1) / 2 * 255
-    original_np = np.clip(original_np, 0, 255)
-
-    # MASK FOR COMPOSITING
-
-    mask_np = mask_image[0].cpu().numpy()
-
-    if mask_np.ndim == 3:
-        mask_np = mask_np.squeeze(0)
-
-    mask_np = mask_np[:, :, None]
-
     print("Person Index:", person_index)
 
     # SET RANDOM SEED
@@ -240,6 +217,7 @@ def run_var(person_index, var_num):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+    generator = torch.Generator(device="cpu").manual_seed(seed)
 
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
@@ -260,6 +238,7 @@ def run_var(person_index, var_num):
         guidance_scale=GUIDANCE_SCALE,
         sketch_cond_rate=SKETCH_COND_RATE,
         start_cond_rate=START_COND_RATE,
+        generator=generator,
         output_type="pil",
     )
 
@@ -305,7 +284,6 @@ def run_var(person_index, var_num):
             (im_parse == 4) |
             (im_parse == 13)
     )
-
     true_head = gt_img * seg_head
 
     # Use generated image everywhere except the head
@@ -315,7 +293,12 @@ def run_var(person_index, var_num):
     final_img = true_head + generated_body
     final_img = final_img.clamp(0, 1)
 
-    tf.to_pil_image(final_img).save(prompt + ".png")
+    final_filename = f"var_{person_index}_{var_num}_final.png"
+    final_path = os.path.join(
+        OUTPUT_DIR,
+        final_filename
+    )
+    tf.to_pil_image(final_img).save(final_path)
 
 
 # TEXT PROMPT

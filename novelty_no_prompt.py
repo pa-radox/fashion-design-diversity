@@ -13,9 +13,9 @@ import torchvision.transforms.functional as tf
 
 # EXPERIMENT SETTINGS
 
-NUM_VARIATIONS = 1
+NUM_VARIATIONS = 5
 
-NUM_INFERENCE_STEPS = 50
+NUM_INFERENCE_STEPS = 30
 
 GUIDANCE_SCALE = 7.5
 
@@ -140,9 +140,8 @@ dataset = VitonHDDataset(
 print("Dataset loaded!")
 
 # SELECT PERSON
-
-# PERSON_INDEX = randrange(len(dataset))
-PERSON_INDEX = 1952
+PERSON_INDEX = random.randrange(len(dataset))
+# PERSON_INDEX = 1952
 sample = dataset[PERSON_INDEX]
 im_parse = sample["im_parse"]
 
@@ -150,7 +149,6 @@ print("Using person sample:", PERSON_INDEX)
 print("Image:", sample["im_name"])
 
 # INPUTS
-
 image = sample["image"].unsqueeze(0)
 pose_map = sample["pose_map"].unsqueeze(0)
 mask_image = sample["inpaint_mask"].unsqueeze(0)
@@ -160,7 +158,6 @@ mask_image = sample["inpaint_mask"].unsqueeze(0)
 sketch = sample["im_sketch"].unsqueeze(0)
 
 # SAVE INPUTS
-
 original_np = (image[0].permute(1, 2, 0).cpu().numpy())
 original_np = (original_np + 1) / 2 * 255
 original_np = np.clip(original_np, 0, 255).astype(np.uint8)
@@ -173,7 +170,6 @@ Image.fromarray(original_np).save(
 )
 
 # MASK
-
 mask_debug = mask_image[0].cpu()
 
 if mask_debug.ndim == 3:
@@ -296,22 +292,6 @@ for i in range(NUM_VARIATIONS):
     generated.save(raw_path)
 
     print("Raw image saved!")
-
-    # # COMPOSITE
-    # generated_np = np.array(generated).astype(np.float32)
-    # final_np = generated_np * mask_np + original_np * (1 - mask_np)
-    # final_np = np.clip(final_np, 0, 255).astype(np.uint8)
-    #
-    # final_image = Image.fromarray(final_np)
-    #
-    # # SAVE FINAL OUTPUT
-    # filename = f"var_{variation_number:02d}.png"
-    # final_path = os.path.join(OUTPUT_DIR, filename)
-    #
-    # print("Saving final image to:", final_path)
-    # final_image.save(final_path)
-    #
-    # print("Final image saved!")
 
     # Original image, converted from [-1, 1] to [0, 1]
     gt_img = image[0] * 0.5 + 0.5
