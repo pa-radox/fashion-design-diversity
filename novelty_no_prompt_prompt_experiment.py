@@ -15,7 +15,7 @@ from src.datasets.vitonhd import VitonHDDataset
 
 NUM_VARIATIONS = 3
 
-NUM_INFERENCE_STEPS = 5
+NUM_INFERENCE_STEPS = 8
 
 GUIDANCE_SCALE = 7.5
 
@@ -38,7 +38,7 @@ DATA_ROOT = (
     r"\assets\data\vitonhd"
 )
 
-OUTPUT_DIR = "prompt_exploration4"
+OUTPUT_DIR = "prompt_exploration5"
 
 # OUTPUT DIRECTORY
 
@@ -113,7 +113,7 @@ scheduler.set_timesteps(
     NUM_INFERENCE_STEPS
 )
 
-# CREATE MGD PIPELINE
+# CREATE MGD PIPEL INE
 
 print("Creating MGD pipeline...")
 
@@ -246,13 +246,19 @@ mask_np = mask_np[:, :, None]
 
 prompts = [
     "a realistic fashion garment design with "
-    "coherent garment construction and thoughtful "
-    "visual composition, incorporating varied "
-    "combinations of shape, color, and design"
+    "coherent garment construction and distinctive "
+    "design features, featuring nuanced color "
+    "distribution, complementary and contrasting "
+    "color accents, and varied visual treatments "
+    "across different garment components"
 ]
-negative_prompt = ("fine speckling, tiny evenly distributed dots, stippling, grainy fabric texture, mottled surface, "
-                   "random micro-patterns, dithering, artificial surface noise, pixelated fabric texture, "
-                   "excessive repetitive tiny details")
+
+negative_prompt = (
+    "dense fine speckling, tiny evenly distributed dots, "
+    "stippled noise, artificial micro-dot patterns, "
+    "fine repetitive pixel-like markings covering the fabric"
+)
+
 
 # START EXPERIMENT
 
