@@ -14,11 +14,8 @@ from src.datasets.vitonhd import VitonHDDataset
 # EXPERIMENT SETTINGS
 
 NUM_VARIATIONS = 20
-
 NUM_INFERENCE_STEPS = 10
-
 GUIDANCE_SCALE = 7.5
-
 BASE_SEED = 1000
 
 # SKETCH CONDITIONING
@@ -29,15 +26,12 @@ START_COND_RATE = 0
 # SETTINGS
 
 SD_PATH = r"C:\mgd_models\stable-diffusion-inpainting"
-
 MGD_WEIGHTS = r"C:\mgd_models\dresscode.pth"
-
 DATA_ROOT = (
     r"C:\Users\osun2\IdeaProjects"
     r"\multimodal-garment-designer-fork"
     r"\assets\data\vitonhd"
 )
-
 OUTPUT_DIR = "dataset_exploration"
 
 # OUTPUT DIRECTORY

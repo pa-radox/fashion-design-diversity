@@ -1,18 +1,14 @@
-import os
-import json
 import torch
 import numpy as np
 
 from PIL import Image, ImageOps
 from torchvision.transforms.functional import to_pil_image
-import torchvision.transforms as transforms
+from diffusers import AutoencoderKL, DDIMScheduler, UNet2DConditionModel
+from transformers import CLIPTextModel, CLIPTokenizer
+from src.mgd_pipelines.mgd_pipe import MGDPipe
+from src.datasets.vitonhd import VitonHDDataset
 
-from src.utils.posemap import kpoint_to_heatmap, get_coco_body25_mapping
-
-
-# ============================================================
 # SETTINGS
-# ============================================================
 
 SD_PATH = r"C:\mgd_models\stable-diffusion-inpainting"
 MGD_WEIGHTS = r"C:\mgd_models\dresscode.pth"
@@ -26,16 +22,8 @@ WIDTH = 384
 
 DEVICE = "cpu"
 
+# LOAD MGD PIPELINE
 
-# ============================================================
-# LOAD YOUR MGD PIPELINE
-# ============================================================
-
-from diffusers import AutoencoderKL, DDIMScheduler, UNet2DConditionModel
-from transformers import CLIPTextModel, CLIPTokenizer
-from src.mgd_pipelines.mgd_pipe import MGDPipe
-
-import src.mgd_pipelines.mgd_pipe
 
 config = UNet2DConditionModel.load_config(
     SD_PATH + "/unet"
@@ -51,7 +39,6 @@ unet.load_state_dict(
         map_location="cpu"
     )
 )
-
 
 text_encoder = CLIPTextModel.from_pretrained(
     SD_PATH,
@@ -86,7 +73,6 @@ scheduler = DDIMScheduler.from_pretrained(
 
 scheduler.set_timesteps(50)
 
-
 mgd_pipe = MGDPipe(
     text_encoder=text_encoder,
     vae=vae,
@@ -95,12 +81,7 @@ mgd_pipe = MGDPipe(
     scheduler=scheduler,
 )
 
-
-# ============================================================
 # USE THE REPOSITORY'S OWN DATASET PREPROCESSING
-# ============================================================
-
-from src.datasets.vitonhd import VitonHDDataset
 
 print("Loading VITON-HD dataset...")
 
@@ -126,9 +107,7 @@ print("Dataset loaded!")
 
 sample = dataset[0]
 
-# ============================================================
 # PREPARE INPUTS
-# ============================================================
 
 image = sample["image"].unsqueeze(0)
 
@@ -141,9 +120,8 @@ mask_image = sample["inpaint_mask"].unsqueeze(0)
 # Save original image before MGD changes anything
 original_image = to_pil_image((image[0] + 1) / 2)
 original_image.save("original.png")
-# ============================================================
+
 # TEXT PROMPT
-# ============================================================
 
 prompt = "a black and red tank top with decorative patterns"
 
@@ -151,15 +129,11 @@ print()
 print("PROMPT:")
 print(prompt)
 
-# ============================================================
 # GENERATE
-# ============================================================
 
 print()
 print("Starting MGD generation...")
 print("This will be VERY slow on CPU.")
-
-from torchvision.transforms.functional import to_pil_image
 
 mask_debug = mask_image.squeeze(0).squeeze(0)
 

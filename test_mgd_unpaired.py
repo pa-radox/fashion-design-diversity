@@ -130,11 +130,6 @@ mask_image = sample["inpaint_mask"].unsqueeze(0)
 
 # UNPAIRED SKETCH
 
-# MGD's VITON-HD data contains a separate unpaired sketch.
-#
-# If your dataset class exposes it as "im_sketch_unpaired",
-# this is all we need:
-
 sketch = sample["im_sketch"].unsqueeze(0)
 
 # SAVE DEBUG INPUTS
