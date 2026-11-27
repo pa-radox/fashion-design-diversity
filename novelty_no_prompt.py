@@ -23,7 +23,7 @@ BASE_SEED = 1000
 
 # SKETCH CONDITIONING
 
-SKETCH_COND_RATE = 1
+SKETCH_COND_RATE = 0.6
 START_COND_RATE = 0
 
 # SETTINGS
@@ -38,7 +38,7 @@ DATA_ROOT = (
     r"\assets\data\vitonhd"
 )
 
-OUTPUT_DIR = "dataset_exploration"
+OUTPUT_DIR = "novelty_results"
 
 # OUTPUT DIRECTORY
 
@@ -82,13 +82,9 @@ text_encoder = CLIPTextModel.from_pretrained(
     local_files_only=True
 )
 
-vae_config = AutoencoderKL.load_config(
-    SD_PATH + "/vae"
-)
+vae_config = AutoencoderKL.load_config(SD_PATH + "/vae")
 
-vae = AutoencoderKL.from_config(
-    vae_config
-)
+vae = AutoencoderKL.from_config(vae_config)
 
 vae.load_state_dict(
     torch.load(
@@ -109,9 +105,7 @@ scheduler = DDIMScheduler.from_pretrained(
     local_files_only=True
 )
 
-scheduler.set_timesteps(
-    NUM_INFERENCE_STEPS
-)
+scheduler.set_timesteps(NUM_INFERENCE_STEPS)
 
 # CREATE MGD PIPELINE
 
@@ -159,15 +153,8 @@ print("Dataset loaded!")
 PERSON_INDEX = 1952
 sample = dataset[PERSON_INDEX]
 
-print(
-    "Using person sample:",
-    PERSON_INDEX
-)
-
-print(
-    "Image:",
-    sample["im_name"]
-)
+print("Using person sample:", PERSON_INDEX)
+print("Image:", sample["im_name"])
 
 # INPUTS
 
@@ -245,9 +232,11 @@ mask_np = mask_np[:, :, None]
 
 # TEXT PROMPT
 
-prompt = ("a realistic, well-designed fashion garment, with coherent construction, defined garment boundaries, "
-          "and consistent materials")
-
+prompt = ("a garment featuring multiple complementary and contrasting colors distributed across its design"
+          "with varied textile treatments and intentional surface designs, including printed motifs, "
+          "geometric patterns, stripes, and decorative details")
+negative_prompt = ("dense fine speckling, tiny evenly distributed dots, stippled noise, artificial micro-dot patterns, "
+                   "fine repetitive pixel-like markings covering the fabric")
 # START EXPERIMENT
 
 print("Number of variations:", NUM_VARIATIONS)
@@ -287,6 +276,7 @@ for i in range(NUM_VARIATIONS):
 
     result = mgd_pipe(
         prompt=prompt,
+        negative_prompt=negative_prompt,
         image=image,
         mask_image=mask_image,
         pose_map=pose_map,
