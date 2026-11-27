@@ -245,8 +245,8 @@ mask_np = mask_np[:, :, None]
 
 # TEXT PROMPT
 
-# prompt = "a fashionable garment with distinctive and unique design details. experiment with colors, patterns, silhouettes, sleeves, necklines, etc."
-prompt = "a fashionable garment with distinctive and unique design details."
+prompt = ("a realistic, well-designed fashion garment, with coherent construction, defined garment boundaries, "
+          "and consistent materials")
 
 # START EXPERIMENT
 

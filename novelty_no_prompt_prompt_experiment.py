@@ -15,7 +15,7 @@ from src.datasets.vitonhd import VitonHDDataset
 
 NUM_VARIATIONS = 3
 
-NUM_INFERENCE_STEPS = 10
+NUM_INFERENCE_STEPS = 5
 
 GUIDANCE_SCALE = 7.5
 
@@ -38,7 +38,7 @@ DATA_ROOT = (
     r"\assets\data\vitonhd"
 )
 
-OUTPUT_DIR = "prompt_exploration3"
+OUTPUT_DIR = "prompt_exploration4"
 
 # OUTPUT DIRECTORY
 
@@ -245,14 +245,14 @@ mask_np = mask_np[:, :, None]
 # TEXT PROMPT
 
 prompts = [
-    "a realistic, well-designed fashion garment, with coherent construction, defined garment boundaries, "
-    "and consistent materials"
-    # "a fashionable garment with distinctive and unique design details. experiment with colors, patterns, "
-    # "silhouettes, sleeves, necklines, etc.",
-    # "a fashionable garment with distinctive and unique design details.",
-    "a realistic, well-designed fashion garment, with coherent construction, defined garment boundaries, consistent "
-    "materials, and carefully arranged colors"
+    "a realistic fashion garment design with "
+    "coherent garment construction and thoughtful "
+    "visual composition, incorporating varied "
+    "combinations of shape, color, and design"
 ]
+negative_prompt = ("fine speckling, tiny evenly distributed dots, stippling, grainy fabric texture, mottled surface, "
+                   "random micro-patterns, dithering, artificial surface noise, pixelated fabric texture, "
+                   "excessive repetitive tiny details")
 
 # START EXPERIMENT
 
@@ -295,6 +295,7 @@ for j in range(len(prompts)):
 
         result = mgd_pipe(
             prompt=prompt,
+            negative_prompt=negative_prompt,
             image=image,
             mask_image=mask_image,
             pose_map=pose_map,
